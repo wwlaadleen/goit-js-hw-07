@@ -1,36 +1,50 @@
-import { galleryItems } from "./gallery-items.js";
+import { galleryItems } from './gallery-items.js';
 // Change code below this line
+console.log('Это import galleryEItems', galleryItems);
 
-const galleryContainerEl = document.querySelector(".gallery");
-const imagesMarkup = createItemsMarkup(galleryItems);
-galleryContainerEl.insertAdjacentHTML("beforeend", imagesMarkup);
 
-function createItemsMarkup(item) {
-  return galleryItems
-    .map(({ preview, original, description }) => {
-      return `<div class="gallery__item">
-      <a class="gallery__link" href="${original.value}">
-        <img
-          class="gallery__image"
-          src="${preview}"
-          data-source="${original}"
-          alt="${description}"
-        />
-      </a>
-    </div>`;
-    })
-    .join("");
-}
-const onContainerClick = (e) => {
-  e.preventDefault();
+const galleryEl = document.querySelector('.gallery');
 
-  if (e.target.classList.contains("gallery")) return;
-    const source = e.target.dataset.source;
+const createMarkup = galleryItems.map((item) =>
+    `<div class="gallery__item">
+<a class="gallery__link" href="${item.original}">
+    <img
+        class ="gallery__image"
+        src="${item.preview}"
+        data-source="${item.original}"
+        
+        alt="${item.description}"
+    />
+</a>
+ </div>`,)
+    .join('');
+galleryEl.insertAdjacentHTML('beforeend', createMarkup)
+
+
+
+
+galleryEl.addEventListener('click', onModal);
+
+function onModal(event) {
+    event.preventDefault();
+
+   
+    const selectedImg = event.target.dataset.source;
+    const instance = basicLightbox.create(`<img src="${selectedImg}" width="800" height="600">`, {
+    onShow: (instance) => {
+        instance.element().querySelector('img').onclick = instance.close
+    }
+})
+instance.show();
+
+    //  Esc
+     window.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            instance.close();
+        };
+    });
     
-  const instance = basicLightbox.create(`
-    <img src="${source}"width="800" height="600">`);
+  
+}
 
-  instance.show();
-};
 
-galleryContainerEl.addEventListener("click", onContainerClick);
